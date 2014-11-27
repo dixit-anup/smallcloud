@@ -9,19 +9,28 @@
 	<style>
 		table { width: 500px; margin-top: 30px; margin-left: auto; margin-right: auto; 
 			border: 1px solid black; border-collapse: collapse; }
-		table td { border: 1px solid black; }
+		table td { }
 		.error { color: red; }
 	</style>
 </head>
 <body>
 	<table>
+		<c:url var="postUrl" value="/write" />
+		<sf:form action="${postUrl}" method="post" modelAttribute="article">
 		<tr>
 			<td width="30%">제목</td>
 			<td width="70%">
 				<sf:input path="articleTitle" cssClass="" />
-				<span><sf:errors path="clubName" cssClass="error" /></span>
+				<span><sf:errors path="articleTitle" cssClass="error" /></span>
+			</td>
+			
+			<td>작성자</td>
+			<td>
+				<sf:input path="writerName" cssClass="" />
+				<span><sf:errors path="writerName" cssClass="error" /></span>
 			</td>
 		</tr>
+		</sf:form>
 	</table>
 </body>
 </html>
