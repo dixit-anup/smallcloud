@@ -1,5 +1,6 @@
 package com.mamascode.smallcloud.controller;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,8 +56,10 @@ public class ArticleController {
 	@RequestMapping(value="/write", method=RequestMethod.GET)
 	public String writeArticleForm(
 			@RequestParam(value="parentId", required=true, defaultValue="0") int parentId,
-			Model model) {
+			Model model,  HttpServletRequest request) {
+		
 		Article article = new Article(); // new article object
+		article.setWriteIp(request.getRemoteAddr());
 		
 		if(parentId != 0) {
 			// parentId parameter check
@@ -74,7 +77,7 @@ public class ArticleController {
 	}
 	
 	@RequestMapping(value="/write", method=RequestMethod.POST)
-	public String writeArticle(@ModelAttribute @Valid Article article, 
+	public String writeArticle(@ModelAttribute @Valid Article article,
 			BindingResult bindingResult, SessionStatus sessionStatus, Model model) {
 		int articleId = 0;
 		

@@ -3,15 +3,33 @@ package com.mamascode.smallcloud.model;
 import java.sql.Timestamp;
 import java.util.List;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
+
 public class Article {
 	/////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////
 	
 	private int articleId = 0;
+	
+	@NotNull
+	@Size(min=1, max=50, message="제목은 50글자 이하로 작성해주세요. 제목은 필수입니다.")
 	private String articleTitle;
+	
+	@NotNull
+	@Size(min=1, max=50, message="내용은 50글자 이하로 작성해주세요. 내용은 필수입니다.")
 	private String articleContent;
+	
+	@NotNull
+	@Size(min=1, max=10, message="10글자 이하(필수)")
 	private String writerName;
+	
+	@NotNull
+	@Size(min=4, max=6, message="4~6글자(필수)")
+	@Pattern(regexp="^[a-zA-Z0-9]+$", message="숫자,알파벳")
 	private String password;
+	
 	private String homepage = "";
 	private Timestamp writeTime;
 	private int parentId = 0;

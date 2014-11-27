@@ -1,0 +1,8 @@
+.error { color: red; font-size: 0.8em; }
+.verySmallInput { width: 15px; height: 1.5em; }
+.smallInput { width: 60px; height: 1.5em; }
+.mediumInput { width: 100px; height: 1.5em; }
+.bigInput { width: 330px; height: 1.5em; }
+.bigText { width: 330px; height: 300px; }
+
+.text-center { text-align: center; }
