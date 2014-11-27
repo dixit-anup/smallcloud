@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mamascode.smallcloud.mybatis.mapper.ArticleMapper">
+	
+	<!-- ********************************************************************************* -->
+	<!-- ********************************************************************************* -->
+	
+	<insert id="insertArticle" parameterType="Article">
+		INSERT INTO articles (article_title, article_content, 
+		writer_name, password, write_time<if test="homepage != ''">, homepage</if>
+		<if test="level != 1">, level</if><if test="parentId != 0">, parent_id</if>, write_ip)
+		VALUES (#{articleTitle}, #{articleContent}, #{writerName}, SHA(#{password}), NOW()
+		<if test="homepage != ''">, #{homepage}</if> 
+		<if test="level != 1">, #{level}</if><if test="parentId != 0">, #{parentId}</if>, #{writeIp})
+	</insert>
+	
+	<update id="updateArticle" parameterType="Article">
+		UPDATE articles SET article_title = #{articleTitle}, article_content = #{articleContent}
+		WHERE article_id = #{articleId} 
+	</update>
+	
+	<delete id="deleteArticle" parameterType="Integer">
+		DELETE FROM articles WHERE article_id = #{articleId}
+	</delete>
+	
+	<update id="maskArticle" parameterType="Integer">
+		UPDATE articles SET mask = 1 WHERE article_id = #{articleId}
+	</update>
+	
+	<!-- ********************************************************************************* -->
+	<!-- ********************************************************************************* -->
+	
+	<select id="selectCountDefault" resultType="Integer">
+		SELECT COUNT(*) FROM articles
+	</select>
+	
+	<!-- 단순 검색 - TODO 전문 검색 도입 이후에는 수정 -->
+	<select id="selectCountSearch" parameterType="hashmap" resultType="Integer">
+		SELECT COUNT(*) FROM articles
+		<choose>
+			<when test="searchby == 1">
+			WHERE article_title LIKE CONCAT('%', #{keyword}, '%')
+			</when>
+			
+			<when test="searchby == 2">
+			WHERE writer_name LIKE CONCAT('%', #{keyword}, '%')
+			</when>
+			
+			<when test="searchby == 3">
+			WHERE article_content LIKE CONCAT('%', #{keyword}, '%')
+			</when>
+			
+			<otherwise>
+			WHERE article_title LIKE CONCAT('%', #{keyword}, '%')
+				OR writer_name LIKE CONCAT('%', #{keyword}, '%')
+				OR article_content LIKE CONCAT('%', #{keyword}, '%')
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="selectCountChild" parameterType="Integer" resultType="Integer">
+		SELECT COUNT(*) FROM articles WHERE parent_id = #{parentArticleId}
+	</select>
+	
+	<select id="selectArticleByArticleId" parameterType="Integer" resultMap="articleMap">
+		SELECT article_id, article_title, article_content, writer_name,
+			password, homepage, write_time, parent_id, level, write_ip, mask 
+		FROM articles WHERE article_id = #{articleId}
+	</select>
+	
+	<select id="selectArticleList" resultMap="articleMap">
+		SELECT article_id, article_title, article_content, writer_name,
+			password, homepage, write_time, parent_id, level, write_ip, mask 
+		FROM articles ORDER BY write_time DESC
+	</select>
+	
+	<!-- 단순 검색 - TODO 전문 검색 도입 이후에는 수정 -->
+	<select id="selectArticlesSearch" parameterType="hashmap" resultMap="articleMap">
+		SELECT article_id, article_title, article_content, writer_name,
+			password, homepage, write_time, parent_id, level, write_ip, mask 
+		FROM articles
+		<choose>
+			<when test="searchby == 1">
+			WHERE article_title LIKE CONCAT('%', #{keyword}, '%')
+			</when>
+			
+			<when test="searchby == 2">
+			WHERE writer_name LIKE CONCAT('%', #{keyword}, '%')
+			</when>
+			
+			<when test="searchby == 3">
+			WHERE article_content LIKE CONCAT('%', #{keyword}, '%')
+			</when>
+			
+			<otherwise>
+			WHERE article_title LIKE CONCAT('%', #{keyword}, '%')
+				OR writer_name LIKE CONCAT('%', #{keyword}, '%')
+				OR article_content LIKE CONCAT('%', #{keyword}, '%')
+			</otherwise>
+		</choose>
+		ORDER BY write_time DESC
+	</select>
+	
+	<select id="selectChildArticleList" parameterType="Integer" resultMap="articleMap">
+		SELECT article_id, article_title, article_content, writer_name,
+			password, homepage, write_time, parent_id, level, write_ip, mask 
+		FROM articles WHERE parent_id = #{parentArticleId} ORDER BY write_time ASC
+	</select>
+	
+	<select id="selectMaxArticleId" resultType="Integer">
+		SELECT MAX(article_id) FROM articles
+	</select>
+	
+	<select id="selectLastInsertArticleId" resultType="Integer">
+		SELECT LAST_INSERT_ID()
+	</select>
+	
+	<!-- ********************************************************************************* -->
+	<!-- ********************************************************************************* -->
+	
+	<insert id="insertArticleUpload" parameterType="ArticleUpload">
+		INSERT INTO article_upload (article_id, file_name) VALUES (#{articleId}, #{fileName}) 
+	</insert>
+	
+	<delete id="deleteArticleUpload" parameterType="Integer">
+		DELETE FROM article_upload WHERE uploadId = #{uploadId}
+	</delete>
+	
+	<delete id="deleteArticleUploadByArticleId" parameterType="Integer">
+		DELETE FROM article_upload WHERE article_id = #{articleId}
+	</delete>
+	
+	<select id="selectArticleUploadCount" parameterType="Integer" resultType="Integer">
+		SELECT COUNT(*) FROM article_upload WHERE article_id = #{articleId}
+	</select>
+	
+	<select id="selectArtocleUploadList" parameterType="Integer" resultMap="articleUploadMap">
+		SELECT upload_id, article_id, file_name FROM article_upload WHERE article_id = #{articleId}
+	</select>
+	
+	<!-- ********************************************************************************* -->
+	<!-- ********************************************************************************* -->
+	
+	<resultMap id="articleMap" type="Article">
+		<id column="article_id" jdbcType="INTEGER" property="articleId" />
+		<result column="article_title" jdbcType="VARCHAR" property="articleTitle" />
+		<result column="article_content" jdbcType="VARCHAR" property="articleContent" />
+		<result column="writer_name" jdbcType="VARCHAR" property="writerName" />
+		<result column="password" jdbcType="VARCHAR" property="password" />
+		<result column="homepage" jdbcType="VARCHAR" property="homepage" />
+		<result column="write_time" jdbcType="TIMESTAMP" property="writeTime" />
+		<result column="parent_id" jdbcType="INTEGER" property="parentId" />
+		<result column="level" jdbcType="TINYINT" property="level" />
+		<result column="write_ip" jdbcType="VARCHAR" property="writeIp" />
+		<result column="mask" jdbcType="BOOLEAN" property="mask" />
+	</resultMap>
+	
+	<resultMap id="articleUploadMap" type="ArticleUpload">
+		<id column="upload_id" jdbcType="INTEGER" property="uploadId" />
+		<result column="article_id" jdbcType="INTEGER" property="articleId" />
+		<result column="file_name" jdbcType="VARCHAR" property="fileName" />
+	</resultMap>
+</mapper>
