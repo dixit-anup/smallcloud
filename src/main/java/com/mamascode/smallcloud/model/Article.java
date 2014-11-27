@@ -14,20 +14,20 @@ public class Article {
 	private int articleId = 0;
 	
 	@NotNull
-	@Size(min=1, max=50, message="Á¦¸ñÀº 50±ÛÀÚ ÀÌÇÏ·Î ÀÛ¼ºÇØÁÖ¼¼¿ä. Á¦¸ñÀº ÇÊ¼öÀÔ´Ï´Ù.")
+	@Size(min=1, max=50, message="ì œëª©ì€ 50ê¸€ì ì´í•˜ë¡œ ì‘ì„±í•´ì£¼ì„¸ìš”. ì œëª©ì€ í•„ìˆ˜ì…ë‹ˆë‹¤.")
 	private String articleTitle;
 	
 	@NotNull
-	@Size(min=1, max=50, message="³»¿ëÀº 50±ÛÀÚ ÀÌÇÏ·Î ÀÛ¼ºÇØÁÖ¼¼¿ä. ³»¿ëÀº ÇÊ¼öÀÔ´Ï´Ù.")
+	@Size(min=1, message="ë‚´ìš©ì€ í•„ìˆ˜ì…ë‹ˆë‹¤.")
 	private String articleContent;
 	
 	@NotNull
-	@Size(min=1, max=10, message="10±ÛÀÚ ÀÌÇÏ(ÇÊ¼ö)")
+	@Size(min=1, max=10, message="10ê¸€ì ì´í•˜(í•„ìˆ˜)")
 	private String writerName;
 	
 	@NotNull
-	@Size(min=4, max=6, message="4~6±ÛÀÚ(ÇÊ¼ö)")
-	@Pattern(regexp="^[a-zA-Z0-9]+$", message="¼ıÀÚ,¾ËÆÄºª")
+	@Size(min=4, max=6, message="4~6ê¸€ì(í•„ìˆ˜)")
+	@Pattern(regexp="^[a-zA-Z0-9]+$", message="ìˆ«ì,ì•ŒíŒŒë²³")
 	private String password;
 	
 	private String homepage = "";
