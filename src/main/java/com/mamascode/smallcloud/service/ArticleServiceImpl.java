@@ -173,6 +173,12 @@ public class ArticleServiceImpl implements ArticleService {
 		
 		List<Article> articleList = articleDao.getChildArticles(
 				0, listHelper.getOffset(), listHelper.getObjectPerPage());
+		
+		for(Article article : articleList) {
+			int childCount = articleDao.getChildCount(article.getArticleId());
+			article.setChildCount(childCount);
+		}
+		
 		listHelper.setList(articleList);
 		
 		return listHelper;

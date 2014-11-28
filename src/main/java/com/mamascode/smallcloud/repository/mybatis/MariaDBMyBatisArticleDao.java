@@ -43,11 +43,12 @@ public class MariaDBMyBatisArticleDao extends MyBatisDao implements ArticleDao {
 	@Override
 	public int write(Article article) {
 		int result = sqlSessionTemplate.insert(getMapperId("insertArticle"), article);
-		int lastInsertId = sqlSessionTemplate.selectOne(getMapperId("selectLastInsertArticleId"));
+		int lastInsertId = 0;
 		
-		if(result == 1)
+		if(result == 1) {
+			lastInsertId = sqlSessionTemplate.selectOne(getMapperId("selectLastInsertArticleId"));
 			return lastInsertId;
-		else
+		} else
 			throw new UpdateResultCountNotMatchException("write() in MariaDBMyBatisArticleDao result is not 1");
 	}
 	

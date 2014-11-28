@@ -37,6 +37,7 @@ public class Article {
 	private String writeIp;
 	private boolean mask;
 	
+	private int childCount;
 	private List<Article> children;
 	
 	/////////////////////////////////////////////////////////
@@ -130,6 +131,14 @@ public class Article {
 		this.mask = mask;
 	}
 	
+	public int getChildCount() {
+		return childCount;
+	}
+
+	public void setChildCount(int childCount) {
+		this.childCount = childCount;
+	}
+
 	public List<Article> getChildren() {
 		return children;
 	}

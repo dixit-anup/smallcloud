@@ -63,7 +63,7 @@ public class ArticleSreviceTest {
 		article3 = new Article();
 		article3.setArticleTitle("test3");
 		article3.setArticleContent("this is a test 3");
-		article3.setWriterName("諛곗닔吏�");
+		article3.setWriterName("배수지");
 		article3.setPassword("1234");
 		article3.setWriteIp("127.0.0.1");
 		
@@ -84,14 +84,14 @@ public class ArticleSreviceTest {
 		article6 = new Article();
 		article6.setArticleTitle("test6");
 		article6.setArticleContent("this is a test 6");
-		article6.setWriterName("�쒖뿰");
+		article6.setWriterName("태연");
 		article6.setPassword("1234");
 		article6.setWriteIp("127.0.0.1");
 		
 		article7 = new Article();
 		article7.setArticleTitle("test7");
 		article7.setArticleContent("this is a test 7");
-		article7.setWriterName("�ㅼ븘");
+		article7.setWriterName("윤아");
 		article7.setPassword("1234");
 		article7.setWriteIp("127.0.0.1");
 		
@@ -105,14 +105,14 @@ public class ArticleSreviceTest {
 		article9 = new Article();
 		article9.setArticleTitle("test9");
 		article9.setArticleContent("this is a test 9");
-		article9.setWriterName("�쇰룎��");
+		article9.setWriterName("삼돌이");
 		article9.setPassword("1234");
 		article9.setWriteIp("127.0.0.1");
 		
 		article10 = new Article();
 		article10.setArticleTitle("test10");
 		article10.setArticleContent("this is a test 10");
-		article10.setWriterName("�ㅽ넧留�");
+		article10.setWriterName("스톨만");
 		article10.setPassword("1234");
 		article10.setWriteIp("127.0.0.1");
 	}
@@ -125,6 +125,7 @@ public class ArticleSreviceTest {
 		testSetup.deleteAllArticle();
 		insertInternal();
 		
+		/*
 		ListHelper<Article> listHelper = articleService.getArticles(1, 10);
 		List<Article> articleList = listHelper.getList();
 		
@@ -158,6 +159,7 @@ public class ArticleSreviceTest {
 		articleList = listHelper.getList();
 		
 		printArticleList(4, "deleting test 3", articleList);
+		*/
 	}
 
 	/////////////////////////////////////////////////////////////////////////////////////////////

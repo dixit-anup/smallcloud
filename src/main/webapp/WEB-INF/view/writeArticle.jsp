@@ -17,6 +17,7 @@
 <body>
 	<table>
 		<c:url var="postUrl" value="/write" />
+		<c:url var="rootUrl" value="/" />
 		<sf:form action="${postUrl}" method="post" modelAttribute="article">
 		<tr>
 			<td>제목</td>
@@ -59,10 +60,10 @@
 			<td></td>
 			<td colspan="3" class="text-center">
 				<input type="submit" value="작성" />
-				<input type="button" value="취소" />
+				<input type="button" value="취소" onclick="location.assign('${rootUrl}');"/>
 			</td>
 		</tr>
-		</sf:form>
-	</table>
+		</sf:form>	<!-- spring form tag End -->
+	</table>	<!-- table tag End -->
 </body>
 </html>
