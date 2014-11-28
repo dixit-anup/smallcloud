@@ -13,6 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+
+
+
 import com.mamascode.smallcloud.model.Article;
 import com.mamascode.smallcloud.repository.ArticleDao;
 import com.mamascode.smallcloud.repository.test.DaoTestSetup;
@@ -125,7 +128,6 @@ public class ArticleSreviceTest {
 		testSetup.deleteAllArticle();
 		insertInternal();
 		
-		/*
 		ListHelper<Article> listHelper = articleService.getArticles(1, 10);
 		List<Article> articleList = listHelper.getList();
 		
@@ -133,7 +135,9 @@ public class ArticleSreviceTest {
 				
 		logger.info("----------------------------------------------------");
 		
+		/*
 		int maxId = articleDao.getMaxArticleId();
+		
 		
 		assertTrue(articleService.deleteArticle(maxId-7)); // article 3 deleting
 		assertTrue(articleService.deleteArticle(maxId-8)); // article 2 deleting
@@ -163,16 +167,6 @@ public class ArticleSreviceTest {
 	}
 
 	/////////////////////////////////////////////////////////////////////////////////////////////
-	
-	private void printChildren(Article article) {
-		printArticle(article);
-		
-		if(article.getChildren() == null)
-			return;
-		
-		for(Article children : article.getChildren())
-			printChildren(children);
-	}
 	
 	private void insertInternal() throws InterruptedException {
 		assertTrue(articleService.writeArticle(article1) != 0);
@@ -230,17 +224,15 @@ public class ArticleSreviceTest {
 	
 	/////////////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////////////////
-	
 	private void printArticleList(int testNo, String testTitle, List<Article> articleList) {
 		logger.info("----------------------------------------------------");
 		logger.info("#{} {}", testNo, testTitle);
 		logger.info("----------------------------------------------------");
-		
 		for(Article article : articleList) {
 			printArticle(article);
 			List<Article> children = articleService.getChildArticles(article.getArticleId());
 			for(Article child : children)
-				printChildren(child);
+				printArticle(child);
 		}
 	}
 	
@@ -253,7 +245,7 @@ public class ArticleSreviceTest {
 			builder.append(article.getArticleTitle()).append(" | ")
 			.append(article.getWriterName()).append(" | ").append(article.getWriteTime());
 		} else {
-			builder.append("��젣��寃뚯떆臾쇱엯�덈떎");
+			builder.append("삭제된 게시물입니다");
 		}
 		
 		logger.info("{}", builder.toString());

@@ -90,13 +90,13 @@ public class ArticleController {
 			return "writeArticle";
 		}
 		
-		sessionStatus.setComplete();		
+		sessionStatus.setComplete();
 		return "redirect:/read/" + articleId;
 	}
 	
 	@RequestMapping(value="/children/{parentId}", method=RequestMethod.GET)
 	@ResponseBody
-	public List<Article> getChildArticles(@PathVariable int parentArticleId) {
-		return articleService.getChildArticles(parentArticleId);
+	public List<Article> getChildArticles(@PathVariable int parentId) {
+		return articleService.getChildArticles(parentId);
 	}
 }

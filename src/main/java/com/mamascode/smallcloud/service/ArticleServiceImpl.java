@@ -1,5 +1,6 @@
 package com.mamascode.smallcloud.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -200,28 +201,29 @@ public class ArticleServiceImpl implements ArticleService {
 	@Override
 	public List<Article> getChildArticles(int articleId) {
 		List<Article> children = articleDao.getChildArticles(articleId);
+		List<Article> returnList = new ArrayList<Article>();
 		
 		for(Article article : children) {
-			getChildArticlesInternal(article);
+			returnList.add(article);
+			getChildArticlesInternal(article.getArticleId(), returnList);
 		}
 		
-		return children;
+		return returnList;
 	}
 	
 	// internal method: getChildArticlesInternal
-	private void getChildArticlesInternal(Article article) {
-		if(article == null || article.getArticleId() == 0)
+	private void getChildArticlesInternal(int articleId, List<Article> articleList) {
+		if(articleId == 0)
 			return;
 		
-		List<Article> children = articleDao.getChildArticles(article.getArticleId());
+		List<Article> children = articleDao.getChildArticles(articleId);
 		
 		if(children == null || children.size() == 0)
 			return;
 		
-		article.setChildren(children);
-		
 		for(Article childArticle : children) {
-			getChildArticlesInternal(childArticle);
+			articleList.add(childArticle);
+			getChildArticlesInternal(childArticle.getArticleId(), articleList);
 		}
 	}
 	

@@ -10,6 +10,8 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 	<title>게시글 목록</title>
 	<c:url var="resourceUrl" value="/res" />
+	<c:url var="ajaxUrl" value="/children/" />
+	<c:url var="readUrl" value="/read" />
 	<link rel="stylesheet" type="text/css" href="${resourceUrl}/basic.css" media="all" />
 	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 	<script type="text/javascript" src="${resourceUrl}/basic.js"></script>
@@ -18,22 +20,79 @@
 			border-collapse: collapse; padding: 1em; }
 		table th, td { padding: 1em; border-top: 1px solid black; border-bottom: 1px solid black; }
 		#bottom-toolbar { width: 80%; margin-top: 30px; }
+		.childArticles { margin-top: 0px; margin-left: auto; margin-right: auto; }
+		.childArticles td { font-size: 0.9em; border: none; }
 	</style>
 	
 	<script>
 		function getChildren(parentId) {
+			var ajaxUrl = '${ajaxUrl}' + parentId;
 			$.ajax({
 				url : ajaxUrl,
 				method : 'get',
-				async : false,
 				success : function(result) {
+					var $baseTr = $('#article' + parentId);
+					var $table = $('<table class="childArticles"></table>');
+					for(var i = 0; i < result.length; i++) {
+						var $tr = makeArticleFromResult(result[i]);
+						$tr.appendTo($table);
+					}
+					var $containerTr = $('<tr id="childrenList' + parentId + '"></tr>');
+					var $containerTd = $('<td colspan="5"></td>');
+					$containerTd.appendTo($containerTr);
 					
+					$table.appendTo($containerTd);
+					$containerTr.insertAfter($baseTr);
 				},
 				error : function() {
 					// ajax error
 					alert("ajax error: 답변글 목록 가져오기 실패");
 				}
 			});
+		}
+		
+		function makeArticleFromResult(result) {
+			var $tr = $('<tr></tr>');
+			var blankTxt = "";
+			
+			for(var i = 0; i < result.level - 1; i++) {
+				blankTxt += '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+			}
+			blankTxt += 'ㄴ';
+			
+			var innerHtml = '<td>' + blankTxt + '['  + result.articleId + ']&nbsp;'
+				+ '<a href="${readUrl}/' + result.articleId +'">' + result.articleTitle + '</a>&nbsp;&nbsp;&nbsp;';
+			
+			var writeTime = new Date(result.writeTime);
+			var writeTimeStr = getDateFormat(writeTime);
+			
+			innerHtml += (result.writerName + ' | ' + writeTimeStr + '</td>');
+			
+			var $td = $(innerHtml);
+			$td.appendTo($tr);
+			
+			return $tr;
+		}
+		
+		function toggleBtn(articleId) {
+			var btnId = '#articleToggle' + articleId;
+			var trId = '#childrenList' + articleId;
+			var $btn = $(btnId);
+			var $tr = $(trId);
+			
+			if($btn.attr('data-value') == 'no-data') {
+				$btn.attr('data-value', 'open');
+				$btn.text('[-]');
+				getChildren(articleId);
+			} else if($btn.attr('data-value') == 'open') {
+				$btn.attr('data-value', 'close');
+				$btn.text('[+]');
+				$tr.css('display', 'none');
+			} else {
+				$btn.attr('data-value', 'open');
+				$btn.text('[-]');
+				$tr.css('display', 'table-row');
+			}
 		}
 	</script>
 </head>
@@ -59,17 +118,21 @@
 			<th width="10%"></th>
 		</tr>
 		
+		
+		
 		<% if(articleList != null && articleList.size() > 0) { %>
 		<% for(Article article : articleList) { %>
 		<c:set var="article" value="<%=article%>" />
-		<tr>
+		<tr id="article${article.articleId}">
 			<td class="text-center">${article.articleId}</td>
-			<td>${article.articleTitle}</td>
+			<td><a href="${readUrl}/${article.articleId}">${article.articleTitle}</a></td>
 			<td class="text-center">${article.writerName}</td>
 			<td class="text-center"><%=DateFormatUtil.getDateFormat(article.getWriteTime())%></td>
 			<td class="text-center font-size-small">
 				<% if(article.getChildCount() > 0) { %>
-				<span class="font-bold" onclick="">[+]</span>
+				<span id="articleToggle${article.articleId}" class="font-bold font-size-big btn-cursor" 
+					onclick="toggleBtn(${article.articleId});" data-value="no-data">[+]
+				</span>
 				<% } %>
 			</td>
 		</tr>

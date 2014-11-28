@@ -18,6 +18,15 @@
     <bean id="validator" 
     	class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean">
     </bean>
+    
+    <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+    	<property name="messageConverters">
+    		<list>
+    			<bean class=
+    				"org.springframework.http.converter.json.MappingJacksonHttpMessageConverter" />
+    		</list>
+    	</property>
+    </bean>
 
 	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
 	    <property name="prefix" value="/WEB-INF/view/"/>

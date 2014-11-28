@@ -111,6 +111,13 @@
 			<version>4.0.0.GA</version>
 		</dependency>
 		
+		<!-- JSON -->   		
+   		<dependency>  
+            <groupId>org.codehaus.jackson</groupId>  
+            <artifactId>jackson-mapper-asl</artifactId>  
+            <version>1.9.2</version>  
+        </dependency>
+		
 		<!-- Test Artifacts -->
 		<dependency>
 			<groupId>org.springframework</groupId>
