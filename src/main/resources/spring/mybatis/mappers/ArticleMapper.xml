@@ -103,10 +103,11 @@
 		ORDER BY write_time DESC
 	</select>
 	
-	<select id="selectChildArticleList" parameterType="Integer" resultMap="articleMap">
+	<select id="selectChildArticleList" parameterType="hashmap" resultMap="articleMap">
 		SELECT article_id, article_title, article_content, writer_name,
 			password, homepage, write_time, parent_id, level, write_ip, mask 
-		FROM articles WHERE parent_id = #{parentArticleId} ORDER BY write_time ASC
+		FROM articles WHERE parent_id = #{parentArticleId} ORDER BY write_time 
+		<if test="reverse == true">DESC</if>
 	</select>
 	
 	<select id="selectMaxArticleId" resultType="Integer">

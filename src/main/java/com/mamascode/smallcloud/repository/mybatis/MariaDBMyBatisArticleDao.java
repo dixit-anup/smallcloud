@@ -179,18 +179,28 @@ public class MariaDBMyBatisArticleDao extends MyBatisDao implements ArticleDao {
 	
 	/******* getChildArticles *******/
 	@Override
-	public List<Article> getChildArticles(int parentArticleId) {
-		return sqlSessionTemplate.selectList(getMapperId("selectChildArticleList"), parentArticleId);
+	public List<Article> getChildArticles(int parentArticleId, boolean reverse) {
+		// parameters
+		Map<String, Object> hashmap = new HashMap<String, Object>();
+		hashmap.put("parentArticleId", parentArticleId);
+		hashmap.put("reverse", reverse);
+		
+		return sqlSessionTemplate.selectList(getMapperId("selectChildArticleList"), hashmap);
 	}
 	
 	/******* getChildArticles: bounded *******/
 	@Override
-	public List<Article> getChildArticles(int parentArticleId, int offset, int limit) {
+	public List<Article> getChildArticles(int parentArticleId, int offset, int limit, boolean reverse) {
 		// RowBounds
 		RowBounds rowBounds = new RowBounds(offset, limit);
 		
+		// parameters
+		Map<String, Object> hashmap = new HashMap<String, Object>();
+		hashmap.put("parentArticleId", parentArticleId);
+		hashmap.put("reverse", reverse);
+		
 		return sqlSessionTemplate.selectList(
-				getMapperId("selectChildArticleList"), parentArticleId, rowBounds);
+				getMapperId("selectChildArticleList"), hashmap, rowBounds);
 	}
 	
 	///////////////////////////////////////////////////////////////////////////////

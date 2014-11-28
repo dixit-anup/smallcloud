@@ -173,7 +173,7 @@ public class ArticleServiceImpl implements ArticleService {
 				totalCount, page, articlePerPage);
 		
 		List<Article> articleList = articleDao.getChildArticles(
-				0, listHelper.getOffset(), listHelper.getObjectPerPage());
+				0, listHelper.getOffset(), listHelper.getObjectPerPage(), true);
 		
 		for(Article article : articleList) {
 			int childCount = articleDao.getChildCount(article.getArticleId());
@@ -200,7 +200,7 @@ public class ArticleServiceImpl implements ArticleService {
 	/******* getChildArticles *******/
 	@Override
 	public List<Article> getChildArticles(int articleId) {
-		List<Article> children = articleDao.getChildArticles(articleId);
+		List<Article> children = articleDao.getChildArticles(articleId, false);
 		List<Article> returnList = new ArrayList<Article>();
 		
 		for(Article article : children) {
@@ -216,7 +216,7 @@ public class ArticleServiceImpl implements ArticleService {
 		if(articleId == 0)
 			return;
 		
-		List<Article> children = articleDao.getChildArticles(articleId);
+		List<Article> children = articleDao.getChildArticles(articleId, false);
 		
 		if(children == null || children.size() == 0)
 			return;

@@ -33,8 +33,8 @@ public interface ArticleDao {
 	List<Article> getArticles();
 	List<Article> getArticles(int offset, int limit);
 	List<Article> searchArticles(String keyword, int searchby, int offset, int limit);
-	List<Article> getChildArticles(int parentArticleId);
-	List<Article> getChildArticles(int parentArticleId, int offset, int limit);
+	List<Article> getChildArticles(int parentArticleId, boolean reverse);
+	List<Article> getChildArticles(int parentArticleId, int offset, int limit, boolean reverse);
 	
 	///////////////////////////////////////////////////////////////////////////////
 	

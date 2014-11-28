@@ -195,7 +195,7 @@ public class MyBatisArticleDaoTest {
 		
 		printArticleList(4, "search 2: keyword = abe, searchby = writer name", articles);
 		
-		articles = articleDao.getChildArticles(parentArticleId);
+		articles = articleDao.getChildArticles(parentArticleId, false);
 		assertThat(articles, is(notNullValue()));
 		assertThat(articles.size(), is(2));
 		
