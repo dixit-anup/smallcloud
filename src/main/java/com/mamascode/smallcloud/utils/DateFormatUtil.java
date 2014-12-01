@@ -82,9 +82,9 @@ public class DateFormatUtil {
 			 builder.append(calendar.get(Calendar.YEAR))
 			 .append("/").append(String.format("%02d", (calendar.get(Calendar.MONTH) + 1)))
 			 .append("/").append(String.format("%02d",calendar.get(Calendar.DATE)))
-			 .append(" ").append((calendar.get(Calendar.AM_PM) == Calendar.AM) ? "am " : "pm�� ")
-			 .append(String.format("%2d", hour))
-			 .append(":").append(String.format("%02d", calendar.get(Calendar.MINUTE)));
+			 .append(" ").append(String.format("%2d", hour))
+			 .append(":").append(String.format("%02d", calendar.get(Calendar.MINUTE)))
+			 .append((calendar.get(Calendar.AM_PM) == Calendar.AM) ? " am" : "pm");
 		 }
 		 
 		 return builder.toString();

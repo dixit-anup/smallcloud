@@ -68,9 +68,17 @@ public class ArticleController {
 			// parentId parameter check
 			Article parent = articleService.getArticle(parentId);
 			
-			if(parent != null && parent.getArticleId() != 0)
+			if(parent != null && parent.getArticleId() != 0 && !parent.isMask()) {
 				article.setParentId(parentId); // valid parentId
-			else
+				
+				// put a original content to a article content
+				String articleContent = (article.getArticleContent() != null &&
+						!article.getArticleContent().equals("")) ? article.getArticleContent() : "";
+				String modifiedContent = new StringBuilder().append(articleContent)
+						.append("\n\n 원문 ===================== \n ")
+						.append(parent.getArticleContent()).toString();
+				article.setArticleContent(modifiedContent);
+			} else
 				return "redirect:/"; // invalid parentId: redirect home
 		}
 		
@@ -94,9 +102,37 @@ public class ArticleController {
 		return "redirect:/read/" + articleId;
 	}
 	
+	@RequestMapping(value="/set/{articleId}", method=RequestMethod.GET)
+	public String setArticleForm(@PathVariable int articleId, Model model) {
+		
+		Article article = articleService.getArticle(articleId);				
+		model.addAttribute("article", article);
+		
+		return "setArticle";
+	}
+	
+	@RequestMapping(value="/set/{articleId}", method=RequestMethod.POST)
+	public String setArticle(@PathVariable int articleId, @ModelAttribute @Valid Article article,
+			BindingResult bindingResult, SessionStatus sessionStatus) {
+		// TODO: parameter filtering
+		
+		if(bindingResult.hasErrors() || !articleService.setArticle(article)) {
+			return "setArticle";
+		}
+		
+		sessionStatus.setComplete();
+		return "redirect:/read/" + articleId;
+	}
+	
 	@RequestMapping(value="/children/{parentId}", method=RequestMethod.GET)
 	@ResponseBody
 	public List<Article> getChildArticles(@PathVariable int parentId) {
 		return articleService.getChildArticles(parentId);
+	}
+	
+	@RequestMapping(value="/delete", method=RequestMethod.POST)
+	@ResponseBody
+	public boolean deleteArticle(@RequestParam("articleId") int articleId) {
+		return articleService.deleteArticle(articleId);
 	}
 }

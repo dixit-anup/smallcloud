@@ -22,6 +22,7 @@
 		#bottom-toolbar { width: 80%; margin-top: 30px; }
 		.childArticles { margin-top: 0px; margin-left: auto; margin-right: auto; }
 		.childArticles td { font-size: 0.9em; border: none; }
+		.deleted { color: orange; }
 	</style>
 	
 	<script>
@@ -60,8 +61,11 @@
 			}
 			blankTxt += 'ㄴ';
 			
+			var titleStr = (result.mask == false) ? 
+					'<a href="${readUrl}/' + result.articleId +'">' + result.articleTitle + '</a>' :
+					'<span class="deleted">삭제된 게시물입니다</span>';
 			var innerHtml = '<td>' + blankTxt + '['  + result.articleId + ']&nbsp;'
-				+ '<a href="${readUrl}/' + result.articleId +'">' + result.articleTitle + '</a>&nbsp;&nbsp;&nbsp;';
+				+ titleStr + '&nbsp;&nbsp;&nbsp;';
 			
 			var writeTime = new Date(result.writeTime);
 			var writeTimeStr = getDateFormat(writeTime);
@@ -125,7 +129,14 @@
 		<c:set var="article" value="<%=article%>" />
 		<tr id="article${article.articleId}">
 			<td class="text-center">${article.articleId}</td>
-			<td><a href="${readUrl}/${article.articleId}">${article.articleTitle}</a></td>
+			<td>
+				<c:choose>
+				<c:when test="${article.mask == false}">
+				<a href="${readUrl}/${article.articleId}">${article.articleTitle}</a>
+				</c:when>
+				<c:otherwise><span class="deleted">삭제된 게시물입니다</span></c:otherwise>
+				</c:choose>
+			</td>
 			<td class="text-center">${article.writerName}</td>
 			<td class="text-center"><%=DateFormatUtil.getDateFormat(article.getWriteTime())%></td>
 			<td class="text-center font-size-small">
@@ -149,8 +160,7 @@
 	<c:otherwise>
 	<div class="errorMsg">
 		오류: 필요 정보가 전달되지 않음
-	</div>
-	
+	</div>	
 	</c:otherwise>
 	
 	</c:choose>	<!-- choose tag End -->

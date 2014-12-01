@@ -17,8 +17,9 @@
 	</insert>
 	
 	<update id="updateArticle" parameterType="Article">
-		UPDATE articles SET article_title = #{articleTitle}, article_content = #{articleContent}
-		WHERE article_id = #{articleId} 
+		UPDATE articles SET article_title = #{articleTitle}, 
+			article_content = #{articleContent}, homepage = #{homepage}
+		WHERE article_id = #{articleId} AND password = SHA(${password})
 	</update>
 	
 	<delete id="deleteArticle" parameterType="Integer">
