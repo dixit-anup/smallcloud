@@ -1,11 +1,15 @@
 package com.mamascode.smallcloud.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -19,6 +23,7 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
 
 import com.mamascode.smallcloud.model.Article;
+import com.mamascode.smallcloud.repository.ArticleDao;
 import com.mamascode.smallcloud.service.ArticleService;
 import com.mamascode.smallcloud.utils.ListHelper;
 
@@ -34,6 +39,9 @@ public class ArticleController {
 	public void setArticleService(ArticleService articleService) {
 		this.articleService = articleService;
 	}
+	
+	@Value("${application.maxArticleLevel}")
+	private int MAX_ARTICLE_LEVEL;
 	
 	////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////
@@ -68,7 +76,8 @@ public class ArticleController {
 			// parentId parameter check
 			Article parent = articleService.getArticle(parentId);
 			
-			if(parent != null && parent.getArticleId() != 0 && !parent.isMask()) {
+			if(parent != null && parent.getArticleId() != 0 && !parent.isMask() 
+					&& parent.getLevel() + 1 <= MAX_ARTICLE_LEVEL) {
 				article.setParentId(parentId); // valid parentId
 				
 				// put a original content to a article content
@@ -79,7 +88,7 @@ public class ArticleController {
 						.append(parent.getArticleContent()).toString();
 				article.setArticleContent(modifiedContent);
 			} else
-				return "redirect:/"; // invalid parentId: redirect home
+				return "redirect:/"; // invalid: redirect home
 		}
 		
 		model.addAttribute("article", article);
@@ -134,5 +143,12 @@ public class ArticleController {
 	@ResponseBody
 	public boolean deleteArticle(@RequestParam("articleId") int articleId) {
 		return articleService.deleteArticle(articleId);
+	}
+	
+	@RequestMapping(value="/check", method=RequestMethod.GET)
+	@ResponseBody
+	public boolean checkPassword(@RequestParam("articleId") int articleId,
+			@RequestParam("password") String password) {		
+		return articleService.checkPassword(articleId, password); 
 	}
 }

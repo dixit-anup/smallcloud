@@ -88,8 +88,6 @@ public class MariaDBMyBatisArticleDao extends MyBatisDao implements ArticleDao {
 					"masking() in MariaDBMyBatisArticleDao result does not match");
 	}
 	
-	// TODO [project memo] masking된 게시물은 마지막 답변 게시물이 삭제될 때 함께 삭제될 수 있도록(Service에서 처리)
-	
 	///////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////
 	
@@ -145,9 +143,17 @@ public class MariaDBMyBatisArticleDao extends MyBatisDao implements ArticleDao {
 		return parentArticle;
 	}
 	
+	/******* checkPassword *******/
+	@Override
+	public int checkPassword(int articleId, String password) {
+		Map<String, Object> hashmap = new HashMap<String, Object>();
+		hashmap.put("articleId", articleId);
+		hashmap.put("password", password);
+		
+		return sqlSessionTemplate.selectOne(getMapperId("checkPassword"), hashmap);
+	}
+	
 	///////////////////////////////////////////////////////////////////////////////
-	
-	
 
 	/******* getArticles *******/
 	@Override

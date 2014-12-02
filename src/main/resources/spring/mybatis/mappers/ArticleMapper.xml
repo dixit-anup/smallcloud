@@ -119,6 +119,11 @@
 		SELECT LAST_INSERT_ID()
 	</select>
 	
+	<select id="checkPassword" parameterType="hashmap" resultType="Integer">
+		SELECT COUNT(*) FROM articles 
+		WHERE article_id = #{articleId} AND password = SHA(#{password})
+	</select>
+	
 	<!-- ********************************************************************************* -->
 	<!-- ********************************************************************************* -->
 	

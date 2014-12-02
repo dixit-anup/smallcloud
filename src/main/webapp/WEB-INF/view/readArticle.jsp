@@ -26,18 +26,33 @@
 	function deleteArticle(articleId) {
 		var ajaxUrl = '${ajaxUrl}';		
 		var requestData = {"articleId" : articleId};
+		var password = prompt("비밀번호를 입력해주세요", '');
 		
-		if(confirm("정말로 게시글을 삭제하시겠습니까?")) {
-			$.post(ajaxUrl, requestData, function(result) {
-				if(result) {
-					alert('게시글 삭제 성공!');
-					location.assign('${rootUrl}');
-				} else {
-					alert('게시글 삭제 실패!');
-					location.assign('${rootUrl}/read/' + articleId);
+		var requestDataChck = {
+				"articleId" : articleId,
+				"password" : password };
+		
+		$.ajaxSetup("async", false);
+		$.get('${rootUrl}/check', requestDataChck, function(result) {
+			if(result == true) {
+				$.ajaxSetup("async", true);
+				
+				if(confirm("정말로 게시글을 삭제하시겠습니까?")) {
+					$.post(ajaxUrl, requestData, function(result) {
+						if(result) {
+							alert('게시글 삭제 성공!');
+							location.assign('${rootUrl}');
+						} else {
+							alert('게시글 삭제 실패!');
+							location.assign('${rootUrl}/read/' + articleId);
+						}
+					});
 				}
-			});
-		}
+			} else {
+				alert('비밀번호가 틀렸습니다!');
+			}
+			
+		});
 	}
 	</script>
 </head>

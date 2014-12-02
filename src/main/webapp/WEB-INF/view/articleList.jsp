@@ -1,3 +1,4 @@
+<%@page import="com.mamascode.smallcloud.utils.PagingHelper"%>
 <%@page import="com.mamascode.smallcloud.utils.DateFormatUtil"%>
 <%@page import="java.util.List"%>
 <%@page import="com.mamascode.smallcloud.model.Article"%>
@@ -23,6 +24,7 @@
 		.childArticles { margin-top: 0px; margin-left: auto; margin-right: auto; }
 		.childArticles td { font-size: 0.9em; border: none; }
 		.deleted { color: orange; }
+		#article_list_page { text-align: center; margin-top: 15px; }
 	</style>
 	
 	<script>
@@ -122,8 +124,6 @@
 			<th width="10%"></th>
 		</tr>
 		
-		
-		
 		<% if(articleList != null && articleList.size() > 0) { %>
 		<% for(Article article : articleList) { %>
 		<c:set var="article" value="<%=article%>" />
@@ -148,12 +148,38 @@
 			</td>
 		</tr>
 		<% } // for loop End %>
+		
+		
 		<% } else { %>
 		<tr>
 			<td colspan="5" class="text-center">게시글이 없습니다.</td>
 		</tr>
 		<% } %>
 	</table>	<!-- article list table End -->
+	
+	<% PagingHelper pagingHelper = new PagingHelper(articleListHelper.getTotalPageCount(), 
+				articleListHelper.getCurPageNumber(), 10); %>
+			<c:set var="pagingHelper" value="<%=pagingHelper%>" />
+	<div id="article_list_page">
+		<c:if test="${pagingHelper.startPage != 1}">
+		<a href="${rootUrl}list?page=${pagingHelper.startPage-pagingHelper.pagePerList}">[prev]</a>
+		</c:if>
+					
+		<c:forEach var="i" begin="${pagingHelper.startPage}" end="${pagingHelper.endPage}">
+				
+		<c:if test="${i == pagingHelper.curPage}">
+		<span class="font-bold">${i}</span>
+		</c:if>
+		
+		<c:if test="${i != pagingHelper.curPage}">
+		<a href="${rootUrl}list?page=${i}">${i}</a>
+		</c:if>
+				
+		</c:forEach>
+		<c:if test="${pagingHelper.endPage != pagingHelper.totalPage}">
+		<a href="${rootUrl}list?page=${pagingHelper.endPage+pagingHelper.pagePerList}">[next]</a>
+		</c:if>
+	</div>
 	
 	</c:when>
 	

@@ -27,8 +27,9 @@ public interface ArticleDao {
 	int getChildCount(int parentArtilceId);
 	
 	Article get(int articleId);
-	
 	Article getParent(int articleId);
+	
+	int checkPassword(int articleId, String password);
 	
 	List<Article> getArticles();
 	List<Article> getArticles(int offset, int limit);
