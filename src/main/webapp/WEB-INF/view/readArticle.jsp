@@ -41,10 +41,10 @@
 					$.post(ajaxUrl, requestData, function(result) {
 						if(result) {
 							alert('게시글 삭제 성공!');
-							location.assign('${rootUrl}');
+							location.assign('${rootUrl}list?openedId=${ancestorId}');
 						} else {
 							alert('게시글 삭제 실패!');
-							location.assign('${rootUrl}/read/' + articleId);
+							location.assign('${rootUrl}read/' + articleId);
 						}
 					});
 				}
@@ -104,7 +104,7 @@
 	</div>
 	
 	<div class="text-center" style="margin-top: 50px;">
-		<a href="${rootUrl}">[home]</a>
+		<a href="${rootUrl}list?openedId=${ancestorId}">[home]</a>
 	</div>
 	
 	</c:when>

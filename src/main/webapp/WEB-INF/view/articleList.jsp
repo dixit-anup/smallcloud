@@ -100,6 +100,13 @@
 				$tr.css('display', 'table-row');
 			}
 		}
+		
+		$(document).ready(function() {
+			var openedId = '${openedId}';
+			if(openedId != null && openedId != 0) {
+				toggleBtn(openedId);
+			}
+		});
 	</script>
 </head>
 <body>

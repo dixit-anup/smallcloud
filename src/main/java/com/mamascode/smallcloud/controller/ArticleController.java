@@ -49,9 +49,10 @@ public class ArticleController {
 	
 	@RequestMapping(value={"/", "/list"}, method=RequestMethod.GET)
 	public String articleList(@RequestParam(value="page", required=true, defaultValue="1") int page,
-			Model model) {
+			@RequestParam(value="openedId", required=true, defaultValue="0") int openedId, Model model) {
 		ListHelper<Article> articleListHelper = articleService.getArticles(page, 10);
 		model.addAttribute("articleListHelper", articleListHelper);
+		model.addAttribute("openedId", openedId);
 		
 		return "articleList";
 	}
@@ -59,7 +60,10 @@ public class ArticleController {
 	@RequestMapping(value="/read/{articleId}", method=RequestMethod.GET)
 	public String readArticle(@PathVariable int articleId, Model model) {
 		Article article = articleService.getArticle(articleId);
+		int ancestorId = articleService.getAncestorId(articleId);
+		
 		model.addAttribute("article", article);
+		model.addAttribute("ancestorId", ancestorId);
 		
 		return "readArticle";
 	}

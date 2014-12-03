@@ -31,10 +31,12 @@ public interface ArticleService {
 	///////////////////////////////////////////////////////////////////////////////
 	
 	Article getArticle(int articleId);
-	boolean checkPassword(int articleId, String password);
 	ListHelper<Article> getArticles(int page, int articlePerPage);
 	ListHelper<Article> searchArticles(int page, int articlePerPage, String keyword, int searchby);
 	List<Article> getChildArticles(int articleId);
+	
+	boolean checkPassword(int articleId, String password);
+	int getAncestorId(int articleId);
 	
 	///////////////////////////////////////////////////////////////////////////////
 		

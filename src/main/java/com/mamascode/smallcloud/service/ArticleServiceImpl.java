@@ -164,12 +164,6 @@ public class ArticleServiceImpl implements ArticleService {
 		return articleDao.get(articleId);
 	}
 	
-	/******* checkPassword *******/
-	@Override
-	public boolean checkPassword(int articleId, String password) {
-		return articleDao.checkPassword(articleId, password) == 1 ? true : false;
-	}
-
 	/******* getArticles *******/
 	@Override
 	public ListHelper<Article> getArticles(int page, int articlePerPage) {
@@ -191,8 +185,28 @@ public class ArticleServiceImpl implements ArticleService {
 		return listHelper;
 	}
 	
-	///////////////////////////////////////////////////////////////////////////////
+	/******* checkPassword *******/
+	@Override
+	public boolean checkPassword(int articleId, String password) {
+		return articleDao.checkPassword(articleId, password) == 1 ? true : false;
+	}
 	
+	/******* getAncestorId *******/
+	@Override
+	public int getAncestorId(int articleId) {
+		Article parent = articleDao.getParent(articleId);
+		int parentId = 0;
+		
+		while(parent != null && parent.getArticleId() != 0) {
+			parentId = parent.getArticleId();
+			parent = articleDao.getParent(parentId);
+		}
+		
+		return parentId;
+	}
+	
+	///////////////////////////////////////////////////////////////////////////////
+
 	/******* searchArticles *******/
 	@Override
 	public ListHelper<Article> searchArticles(int page, int articlePerPage,

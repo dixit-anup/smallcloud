@@ -20,8 +20,7 @@ CREATE TABLE IF NOT EXISTS articles (
 	write_ip VARCHAR(16) NOT NULL,
 	mask BOOLEAN NOT NULL DEFAULT 0,
 	
-	INDEX ix_write_time (write_time),
-	INDEX ix_writer_name (writer_name)
+	INDEX ix_write_time (write_time)
 ) default character set=utf8;
 
 
