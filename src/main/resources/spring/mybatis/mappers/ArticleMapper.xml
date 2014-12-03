@@ -101,7 +101,7 @@
 				OR article_content LIKE CONCAT('%', #{keyword}, '%')
 			</otherwise>
 		</choose>
-		ORDER BY write_time DESC
+		ORDER BY article_id DESC
 	</select>
 	
 	<select id="selectChildArticleList" parameterType="hashmap" resultMap="articleMap">

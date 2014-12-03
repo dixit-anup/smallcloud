@@ -5,17 +5,17 @@ public class SecurityUtil {
 	public static String replaceScriptTag(String src, boolean useHtml, String[] allowedTags) {
 		String retStr = "";
 		if(useHtml) {
-			retStr = src.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+			retStr = src.replaceAll("<", "&lt;");
 			
 			for(String tag : allowedTags) {
 				String regexLower = new StringBuilder().append("&lt;")
-						.append(tag.toLowerCase()).append("&gt;").toString();
+						.append(tag.toLowerCase()).toString();
 				String regexUpper = new StringBuilder().append("&lt;")
-						.append(tag.toUpperCase()).append("&gt;").toString();
+						.append(tag.toUpperCase()).toString();
 				String replacementLower = new StringBuilder().append("<")
-						.append(tag.toLowerCase()).append(">").toString();
+						.append(tag.toLowerCase()).toString();
 				String replacementUpper = new StringBuilder().append("<")
-						.append(tag.toUpperCase()).append(">").toString();
+						.append(tag.toUpperCase()).toString();
 				
 				retStr = retStr.replaceAll(regexLower, replacementLower);
 				retStr = retStr.replaceAll(regexUpper, replacementUpper);

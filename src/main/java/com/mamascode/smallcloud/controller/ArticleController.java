@@ -1,13 +1,12 @@
 package com.mamascode.smallcloud.controller;
 
-import java.util.HashMap;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
-import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -26,6 +25,7 @@ import com.mamascode.smallcloud.model.Article;
 import com.mamascode.smallcloud.repository.ArticleDao;
 import com.mamascode.smallcloud.service.ArticleService;
 import com.mamascode.smallcloud.utils.ListHelper;
+import com.mamascode.smallcloud.utils.SecurityUtil;
 
 @Controller
 @SessionAttributes({"article"})
@@ -105,7 +105,12 @@ public class ArticleController {
 			BindingResult bindingResult, SessionStatus sessionStatus, Model model) {
 		int articleId = 0;
 		
-		// TODO: parameter filtering
+		// parameter filtering
+		//String[] allowedTag = {"span", "p"};
+		article.setArticleTitle(SecurityUtil.replaceScriptTag(article.getArticleTitle(), false, null));
+		article.setArticleContent(SecurityUtil.replaceScriptTag(article.getArticleContent(), false, null));
+		article.setWriterName(SecurityUtil.replaceScriptTag(article.getWriterName(), false, null));
+		article.setHomepage(SecurityUtil.replaceScriptTag(article.getHomepage(), false, null));
 		
 		if(bindingResult.hasErrors() || (articleId = articleService.writeArticle(article)) == 0) {
 			return "writeArticle";
@@ -127,7 +132,11 @@ public class ArticleController {
 	@RequestMapping(value="/set/{articleId}", method=RequestMethod.POST)
 	public String setArticle(@PathVariable int articleId, @ModelAttribute @Valid Article article,
 			BindingResult bindingResult, SessionStatus sessionStatus) {
-		// TODO: parameter filtering
+		// parameter filtering
+		//String[] allowedTag = {"span", "p"};
+		article.setArticleTitle(SecurityUtil.replaceScriptTag(article.getArticleTitle(), false, null));
+		article.setArticleContent(SecurityUtil.replaceScriptTag(article.getArticleContent(), false, null));
+		article.setHomepage(SecurityUtil.replaceScriptTag(article.getHomepage(), false, null));
 		
 		if(bindingResult.hasErrors() || !articleService.setArticle(article)) {
 			return "setArticle";
@@ -154,5 +163,18 @@ public class ArticleController {
 	public boolean checkPassword(@RequestParam("articleId") int articleId,
 			@RequestParam("password") String password) {		
 		return articleService.checkPassword(articleId, password); 
+	}
+	
+	@RequestMapping(value="/search", method=RequestMethod.GET)
+	public String search(@RequestParam(value="page", required=true, defaultValue="1") int page,
+			@RequestParam(value="keyword", required=true) String keyword, Model model) throws UnsupportedEncodingException {
+		keyword = URLDecoder.decode(keyword, "utf-8");
+		
+		ListHelper<Article> articleListHelper = articleService.searchArticles(
+				page, 20, keyword, ArticleDao.SEARCH_ALL);
+		model.addAttribute("articleListHelper", articleListHelper);
+		model.addAttribute("keyword", keyword);
+		
+		return "searchResult";
 	}
 }

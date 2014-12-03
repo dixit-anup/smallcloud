@@ -9,11 +9,10 @@
 <html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-	<title>게시글 목록</title>
+	<title>검색 결과</title>
 	<c:url var="resourceUrl" value="/res" />
-	<c:url var="ajaxUrl" value="/children/" />
+	<c:url var="rootUrl" value="/" />
 	<c:url var="readUrl" value="/read" />
-	<c:url var="searchUrl" value="/search" />
 	<link rel="stylesheet" type="text/css" href="${resourceUrl}/basic.css" media="all" />
 	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 	<script type="text/javascript" src="${resourceUrl}/basic.js"></script>
@@ -26,99 +25,11 @@
 		.childArticles td { font-size: 0.9em; border: none; }
 		.deleted { color: orange; }
 		#article_list_page { text-align: center; margin-top: 15px; }
+		.highlighted { background-color: skyblue; }
 	</style>
 	
 	<script>
-		function getChildren(parentId) {
-			var ajaxUrl = '${ajaxUrl}' + parentId;
-			$.ajax({
-				url : ajaxUrl,
-				method : 'get',
-				success : function(result) {
-					var $baseTr = $('#article' + parentId);
-					var $table = $('<table class="childArticles"></table>');
-					for(var i = 0; i < result.length; i++) {
-						var $tr = makeArticleFromResult(result[i]);
-						$tr.appendTo($table);
-					}
-					var $containerTr = $('<tr id="childrenList' + parentId + '"></tr>');
-					var $containerTd = $('<td colspan="5"></td>');
-					$containerTd.appendTo($containerTr);
-					
-					$table.appendTo($containerTd);
-					$containerTr.insertAfter($baseTr);
-				},
-				error : function() {
-					// ajax error
-					alert("ajax error: 답변글 목록 가져오기 실패");
-				}
-			});
-		}
 		
-		function makeArticleFromResult(result) {
-			var $tr = $('<tr></tr>');
-			var blankTxt = "";
-			
-			for(var i = 0; i < result.level - 1; i++) {
-				blankTxt += '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
-			}
-			blankTxt += 'ㄴ';
-			
-			var titleStr = (result.mask == false) ? 
-					'<a href="${readUrl}/' + result.articleId +'">' + result.articleTitle + '</a>' :
-					'<span class="deleted">삭제된 게시물입니다</span>';
-			var innerHtml = '<td>' + blankTxt + '['  + result.articleId + ']&nbsp;'
-				+ titleStr + '&nbsp;&nbsp;&nbsp;';
-			
-			var writeTime = new Date(result.writeTime);
-			var writeTimeStr = getDateFormat(writeTime);
-			
-			innerHtml += (result.writerName + ' | ' + writeTimeStr + '</td>');
-			
-			var $td = $(innerHtml);
-			$td.appendTo($tr);
-			
-			return $tr;
-		}
-		
-		function toggleBtn(articleId) {
-			var btnId = '#articleToggle' + articleId;
-			var trId = '#childrenList' + articleId;
-			var $btn = $(btnId);
-			var $tr = $(trId);
-			
-			if($btn.attr('data-value') == 'no-data') {
-				$btn.attr('data-value', 'open');
-				$btn.text('[-]');
-				getChildren(articleId);
-			} else if($btn.attr('data-value') == 'open') {
-				$btn.attr('data-value', 'close');
-				$btn.text('[+]');
-				$tr.css('display', 'none');
-			} else {
-				$btn.attr('data-value', 'open');
-				$btn.text('[-]');
-				$tr.css('display', 'table-row');
-			}
-		}
-		
-		function goSearch() {
-			var keyword = $('#keyword').attr('value');
-			keyword = encodeURIComponent(encodeURIComponent($.trim(keyword)));
-			
-			if(keyword.length == 0) {
-				alert('검색 키워드를 입력해주세요!');
-			} else {
-				location.assign('${searchUrl}?keyword=' + keyword);
-			}
-		}
-		
-		$(document).ready(function() {
-			var openedId = '${openedId}';
-			if(openedId != null && openedId != 0) {
-				toggleBtn(openedId);
-			}
-		});
 	</script>
 </head>
 <body>
@@ -126,6 +37,7 @@
 	
 	<c:when test="${articleListHelper != null && articleListHelper.list != null}">
 	<% 
+		String keyword = (String) request.getAttribute("keyword");
 		ListHelper<Article> articleListHelper = null;
 		List<Article> articleList = null;
 		if(request.getAttribute("articleListHelper") instanceof ListHelper) {
@@ -145,6 +57,12 @@
 		
 		<% if(articleList != null && articleList.size() > 0) { %>
 		<% for(Article article : articleList) { %>
+		<%
+			article.setArticleTitle(article.getArticleTitle().replaceAll(
+					keyword, "<span class='highlighted'>" + keyword + "</span>"));
+			article.setWriterName(article.getWriterName().replaceAll(
+				keyword, "<span class='highlighted'>" + keyword + "</span>"));
+		%>
 		<c:set var="article" value="<%=article%>" />
 		<tr id="article${article.articleId}">
 			<td class="text-center">${article.articleId}</td>
@@ -171,7 +89,7 @@
 		
 		<% } else { %>
 		<tr>
-			<td colspan="5" class="text-center">게시글이 없습니다.</td>
+			<td colspan="5" class="text-center">검색 결과가 없습니다.</td>
 		</tr>
 		<% } %>
 	</table>	<!-- article list table End -->
@@ -210,11 +128,8 @@
 	
 	</c:choose>	<!-- choose tag End -->
 	
-	<c:url var="writeUrl" value="/write" />
-	<div id="bottom-toolbar" class="text-right">
-		<button onclick="location.assign('${writeUrl}');">게시글 쓰기</button><br /><br />
-		<input type="text" class="bigInput" id="keyword" />&nbsp;
-		<button onclick="goSearch();">검색</button>
+	<div class="text-center" style="margin-top: 50px;">
+		<a href="${rootUrl}">[home]</a>
 	</div>
 </body>
 </html>

@@ -211,8 +211,14 @@ public class ArticleServiceImpl implements ArticleService {
 	@Override
 	public ListHelper<Article> searchArticles(int page, int articlePerPage,
 			String keyword, int searchby) {
-		// TODO Auto-generated method stub
-		return null;
+		int totalCount = articleDao.getCount(keyword, searchby);
+		ListHelper<Article> listHelper = new ListHelper<Article>(totalCount, page, articlePerPage);
+		List<Article> articleList = articleDao.searchArticles(
+				keyword, searchby, listHelper.getOffset(), listHelper.getLimit());
+		
+		listHelper.setList(articleList);
+		
+		return listHelper;
 	}
 	
 	///////////////////////////////////////////////////////////////////////////////
