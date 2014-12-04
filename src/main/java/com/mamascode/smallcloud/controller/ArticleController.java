@@ -5,6 +5,7 @@ import java.net.URLDecoder;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,8 +32,8 @@ import com.mamascode.smallcloud.utils.SecurityUtil;
 @SessionAttributes({"article"})
 @RequestMapping("/")
 public class ArticleController {
-	////////////////////////////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////
 	// service interface
 	@Autowired private ArticleService articleService;
 
@@ -40,34 +41,51 @@ public class ArticleController {
 		this.articleService = articleService;
 	}
 	
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	// constant variables
+	
 	@Value("${application.maxArticleLevel}")
 	private int MAX_ARTICLE_LEVEL;
 	
-	////////////////////////////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////////////////////
+	private final static int ARTICLE_PER_PAGE = 15; 
+	
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////
 	// handler methods
 	
+	/***** articleList *****/
 	@RequestMapping(value={"/", "/list"}, method=RequestMethod.GET)
 	public String articleList(@RequestParam(value="page", required=true, defaultValue="1") int page,
-			@RequestParam(value="openedId", required=true, defaultValue="0") int openedId, Model model) {
-		ListHelper<Article> articleListHelper = articleService.getArticles(page, 10);
+			@RequestParam(value="openedId", required=true, defaultValue="0") int openedId, 
+			HttpSession session, Model model) {
+		ListHelper<Article> articleListHelper = articleService.getArticles(page, ARTICLE_PER_PAGE);
 		model.addAttribute("articleListHelper", articleListHelper);
 		model.addAttribute("openedId", openedId);
+		
+		session.setAttribute("listPage", articleListHelper.getCurPageNumber());
 		
 		return "articleList";
 	}
 	
+	/***** readArticle *****/
 	@RequestMapping(value="/read/{articleId}", method=RequestMethod.GET)
-	public String readArticle(@PathVariable int articleId, Model model) {
+	public String readArticle(@PathVariable int articleId, HttpSession session, Model model) {
 		Article article = articleService.getArticle(articleId);
 		int ancestorId = articleService.getAncestorId(articleId);
 		
 		model.addAttribute("article", article);
 		model.addAttribute("ancestorId", ancestorId);
 		
+		if(session.getAttribute("listPage") != null && ((Integer) session.getAttribute("listPage")) != 1) {
+			model.addAttribute("listPage", session.getAttribute("listPage"));
+		}
+		
 		return "readArticle";
 	}
 	
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	
+	/***** writeArticleForm *****/
 	@RequestMapping(value="/write", method=RequestMethod.GET)
 	public String writeArticleForm(
 			@RequestParam(value="parentId", required=true, defaultValue="0") int parentId,
@@ -100,26 +118,34 @@ public class ArticleController {
 		return "writeArticle";
 	}
 	
+	/***** writeArticle *****/
 	@RequestMapping(value="/write", method=RequestMethod.POST)
-	public String writeArticle(@ModelAttribute @Valid Article article,
+	public String writeArticle(@ModelAttribute @Valid Article article, HttpSession session,
 			BindingResult bindingResult, SessionStatus sessionStatus, Model model) {
 		int articleId = 0;
 		
 		// parameter filtering
-		//String[] allowedTag = {"span", "p"};
-		article.setArticleTitle(SecurityUtil.replaceScriptTag(article.getArticleTitle(), false, null));
-		article.setArticleContent(SecurityUtil.replaceScriptTag(article.getArticleContent(), false, null));
-		article.setWriterName(SecurityUtil.replaceScriptTag(article.getWriterName(), false, null));
-		article.setHomepage(SecurityUtil.replaceScriptTag(article.getHomepage(), false, null));
+		article.setArticleTitle(SecurityUtil.replaceScriptTag(article.getArticleTitle(), false));
+		article.setArticleContent(SecurityUtil.replaceScriptTag(article.getArticleContent(), true));
+		article.setWriterName(SecurityUtil.replaceScriptTag(article.getWriterName(), false));
+		article.setHomepage(SecurityUtil.replaceScriptTag(article.getHomepage(), false));
 		
 		if(bindingResult.hasErrors() || (articleId = articleService.writeArticle(article)) == 0) {
 			return "writeArticle";
 		}
 		
 		sessionStatus.setComplete();
+		
+		if(article.getParentId() == 0) {
+			session.setAttribute("listPage", 1);
+		}
+		
 		return "redirect:/read/" + articleId;
 	}
 	
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	
+	/***** setArticleForm *****/
 	@RequestMapping(value="/set/{articleId}", method=RequestMethod.GET)
 	public String setArticleForm(@PathVariable int articleId, Model model) {
 		
@@ -129,14 +155,14 @@ public class ArticleController {
 		return "setArticle";
 	}
 	
+	/***** setArticle *****/
 	@RequestMapping(value="/set/{articleId}", method=RequestMethod.POST)
 	public String setArticle(@PathVariable int articleId, @ModelAttribute @Valid Article article,
 			BindingResult bindingResult, SessionStatus sessionStatus) {
 		// parameter filtering
-		//String[] allowedTag = {"span", "p"};
-		article.setArticleTitle(SecurityUtil.replaceScriptTag(article.getArticleTitle(), false, null));
-		article.setArticleContent(SecurityUtil.replaceScriptTag(article.getArticleContent(), false, null));
-		article.setHomepage(SecurityUtil.replaceScriptTag(article.getHomepage(), false, null));
+		article.setArticleTitle(SecurityUtil.replaceScriptTag(article.getArticleTitle(), false));
+		article.setArticleContent(SecurityUtil.replaceScriptTag(article.getArticleContent(), true));
+		article.setHomepage(SecurityUtil.replaceScriptTag(article.getHomepage(), false));
 		
 		if(bindingResult.hasErrors() || !articleService.setArticle(article)) {
 			return "setArticle";
@@ -146,18 +172,25 @@ public class ArticleController {
 		return "redirect:/read/" + articleId;
 	}
 	
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	// AJAX
+	
+	/***** getChildArticles *****/
 	@RequestMapping(value="/children/{parentId}", method=RequestMethod.GET)
 	@ResponseBody
 	public List<Article> getChildArticles(@PathVariable int parentId) {
 		return articleService.getChildArticles(parentId);
 	}
 	
+	/***** deleteArticle *****/
 	@RequestMapping(value="/delete", method=RequestMethod.POST)
 	@ResponseBody
 	public boolean deleteArticle(@RequestParam("articleId") int articleId) {
 		return articleService.deleteArticle(articleId);
 	}
 	
+	/***** checkPassword *****/
 	@RequestMapping(value="/check", method=RequestMethod.GET)
 	@ResponseBody
 	public boolean checkPassword(@RequestParam("articleId") int articleId,
@@ -165,13 +198,14 @@ public class ArticleController {
 		return articleService.checkPassword(articleId, password); 
 	}
 	
+	/***** search *****/
 	@RequestMapping(value="/search", method=RequestMethod.GET)
 	public String search(@RequestParam(value="page", required=true, defaultValue="1") int page,
 			@RequestParam(value="keyword", required=true) String keyword, Model model) throws UnsupportedEncodingException {
 		keyword = URLDecoder.decode(keyword, "utf-8");
 		
 		ListHelper<Article> articleListHelper = articleService.searchArticles(
-				page, 20, keyword, ArticleDao.SEARCH_ALL);
+				page, ARTICLE_PER_PAGE, keyword, ArticleDao.SEARCH_ALL);
 		model.addAttribute("articleListHelper", articleListHelper);
 		model.addAttribute("keyword", keyword);
 		

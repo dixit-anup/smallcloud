@@ -124,6 +124,25 @@ public class ArticleSreviceTest {
 	/////////////////////////////////////////////////////////////////////////////////////////////
 	
 	@Test
+	public void test() {
+		Article article = new Article();
+		article.setWriterName("hwang");
+		article.setPassword("1111");
+		article.setWriteIp("127.0.0.1");
+		
+		// 테스트 글 10만 개
+		/*for(int i = 0; i < 1000; i++) {
+			for(int j = 1; j <= 100; j++) {
+				int num = i * 100 + j;
+				article.setArticleTitle("test" + num);
+				article.setArticleContent("this is a test no." + num);
+				
+				assertTrue(articleService.writeArticle(article) != 0);
+			}
+		}*/
+	}
+	
+	//@Test
 	public void totalTest() throws InterruptedException {
 		testSetup.deleteAllArticle();
 		insertInternal();

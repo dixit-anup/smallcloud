@@ -104,7 +104,24 @@
 	</div>
 	
 	<div class="text-center" style="margin-top: 50px;">
-		<a href="${rootUrl}list?openedId=${ancestorId}">[home]</a>
+		<c:choose>
+			<c:when test="${ancestorId != null && ancestorId != 0 && listPage != null && listPage != 1}">
+				<c:set var="query" value="?openedId=${ancestorId}&page=${listPage}" />
+			</c:when>
+			
+			<c:when test="${(ancestorId == null || ancestorId == 0) && (listPage != null && listPage != 1)}">
+				<c:set var="query" value="?page=${listPage}" />
+			</c:when>
+			
+			<c:when test="${(ancestorId != null && ancestorId != 0) && (listPage == null || listPage == 1)}">
+				<c:set var="query" value="?openedId=${ancestorId}" />
+			</c:when>
+			
+			<c:otherwise>
+				<c:set var="query" value="" />
+			</c:otherwise>
+		</c:choose>
+		<a href="${rootUrl}list${query}">[home]</a>
 	</div>
 	
 	</c:when>

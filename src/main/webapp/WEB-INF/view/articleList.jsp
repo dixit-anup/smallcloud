@@ -181,7 +181,7 @@
 			<c:set var="pagingHelper" value="<%=pagingHelper%>" />
 	<div id="article_list_page">
 		<c:if test="${pagingHelper.startPage != 1}">
-		<a href="${rootUrl}list?page=${pagingHelper.startPage-pagingHelper.pagePerList}">[prev]</a>
+		<a href="${rootUrl}list?page=${pagingHelper.startPage-pagingHelper.numberOfPagesDisplyed}">[prev]</a>
 		</c:if>
 					
 		<c:forEach var="i" begin="${pagingHelper.startPage}" end="${pagingHelper.endPage}">
@@ -196,7 +196,7 @@
 				
 		</c:forEach>
 		<c:if test="${pagingHelper.endPage != pagingHelper.totalPage}">
-		<a href="${rootUrl}list?page=${pagingHelper.endPage+pagingHelper.pagePerList}">[next]</a>
+		<a href="${rootUrl}list?page=${pagingHelper.endPage+pagingHelper.numberOfPagesDisplyed}">[next]</a>
 		</c:if>
 	</div>
 	
