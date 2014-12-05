@@ -12,6 +12,7 @@
 	<title>게시글 목록</title>
 	<c:url var="resourceUrl" value="/res" />
 	<c:url var="ajaxUrl" value="/children/" />
+	<c:url var="ajaxUrlSearchTitle" value="/searchTitle" />
 	<c:url var="readUrl" value="/read" />
 	<c:url var="searchUrl" value="/search" />
 	<link rel="stylesheet" type="text/css" href="${resourceUrl}/basic.css" media="all" />
@@ -21,7 +22,7 @@
 		table { width: 600px; margin-top: 100px; margin-left: auto; margin-right: auto; 
 			border-collapse: collapse; padding: 1em; }
 		table th, td { padding: 1em; border-top: 1px solid black; border-bottom: 1px solid black; }
-		#bottom-toolbar { width: 80%; margin-top: 30px; }
+		#bottom-toolbar { width: 80%; margin-top: 30px; margin-bottom: 200px; }
 		.childArticles { margin-top: 0px; margin-left: auto; margin-right: auto; }
 		.childArticles td { font-size: 0.9em; border: none; }
 		.deleted { color: orange; }
@@ -118,7 +119,58 @@
 			if(openedId != null && openedId != 0) {
 				toggleBtn(openedId);
 			}
+			
+			$('#keyword').change(function(event) {
+				var keyword = $('#keyword').attr('value');
+				keyword = encodeURIComponent(encodeURIComponent($.trim(keyword)));
+				//alert(keyword);
+				var ajaxUrl = '${ajaxUrlSearchTitle}?keyword=' + keyword;
+				
+				if(keyword.length > 0) {
+					$.ajax({
+						url : ajaxUrl,
+						method : 'get',
+						success : function(result) {
+							if($('#searchTxtBox') != null) {
+								$('#searchTxtBox').remove();
+							}
+							
+							var $div = $('<div id="searchTxtBox"></div>');
+							$div.css('position', 'absolute');
+							$div.css('width', $('#keyword').innerWidth());
+							$div.css('left', $('#keyword').offset().left);
+							$div.css('top', $('#keyword').offset().top + $('#keyword').innerHeight());
+							$div.css('border', '1px solid skyblue');
+							
+							$div.appendTo($('body'));
+							
+							for(var i = 0; i < result.length; i++) {
+								var keyword = result[i];
+								var $span = $('<span onclick="setKeyword(\'' + keyword +'\')">' 
+										+ keyword +'</span><br />');
+								
+								$span.css('cursor', 'pointer');
+								$span.appendTo($div);
+							}
+						},error : function() {
+							// ajax error
+							alert("ajax error: 검색어 가져오기 실패");
+						}
+					});
+				}
+			});
+			
+			$('#keyword').focusout(function() {
+				if($('#searchTxtBox') != null) {
+					$('#searchTxtBox').remove();
+				}
+			});
 		});
+		
+		function setKeyword(keyword) {
+			$('#searchTxtBox').remove();
+			$('#keyword').attr('value', keyword);
+		}
 	</script>
 </head>
 <body>
@@ -181,6 +233,8 @@
 			<c:set var="pagingHelper" value="<%=pagingHelper%>" />
 	<div id="article_list_page">
 		<c:if test="${pagingHelper.startPage != 1}">
+		<a href="${rootUrl}list?page=1">1</a>
+		&nbsp;&nbsp;
 		<a href="${rootUrl}list?page=${pagingHelper.startPage-pagingHelper.numberOfPagesDisplyed}">[prev]</a>
 		</c:if>
 					
@@ -197,6 +251,8 @@
 		</c:forEach>
 		<c:if test="${pagingHelper.endPage != pagingHelper.totalPage}">
 		<a href="${rootUrl}list?page=${pagingHelper.endPage+pagingHelper.numberOfPagesDisplyed}">[next]</a>
+		&nbsp;&nbsp;
+		<a href="${rootUrl}list?page=${pagingHelper.totalPage}">${pagingHelper.totalPage}</a>
 		</c:if>
 	</div>
 	

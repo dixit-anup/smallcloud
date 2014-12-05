@@ -122,6 +122,12 @@
 		WHERE article_id = #{articleId} AND password = SHA(#{password})
 	</select>
 	
+	<select id="searchTitle" parameterType="String" resultType="String">
+		SELECT article_title FROM articles 
+		WHERE article_title LIKE CONCAT(#{keyword}, '%')
+		ORDER BY article_title
+	</select>
+	
 	<!-- ********************************************************************************* -->
 	<!-- ********************************************************************************* -->
 	

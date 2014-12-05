@@ -211,4 +211,13 @@ public class ArticleController {
 		
 		return "searchResult";
 	}
+	
+	/***** getSearchTitle 
+	 * @throws UnsupportedEncodingException *****/
+	@RequestMapping(value="/searchTitle", method=RequestMethod.GET)
+	@ResponseBody
+	public List<String> getSearchTitle(@RequestParam("keyword") String keyword) throws UnsupportedEncodingException {
+		keyword = URLDecoder.decode(keyword, "utf-8");
+		return articleService.getSearchTitle(keyword, 10);	
+	}
 }

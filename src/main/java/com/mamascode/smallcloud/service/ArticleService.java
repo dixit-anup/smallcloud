@@ -37,6 +37,7 @@ public interface ArticleService {
 	
 	boolean checkPassword(int articleId, String password);
 	int getAncestorId(int articleId);
+	List<String> getSearchTitle(String keyword, int keywordPerPage); 
 	
 	///////////////////////////////////////////////////////////////////////////////
 		

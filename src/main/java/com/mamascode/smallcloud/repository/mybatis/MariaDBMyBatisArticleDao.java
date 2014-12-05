@@ -209,9 +209,16 @@ public class MariaDBMyBatisArticleDao extends MyBatisDao implements ArticleDao {
 				getMapperId("selectChildArticleList"), hashmap, rowBounds);
 	}
 	
-	///////////////////////////////////////////////////////////////////////////////
-	///////////////////////////////////////////////////////////////////////////////
+	/******* getSearchTitle *******/
+	@Override
+	public List<String> getSearchTitle(String keyword, int offset, int limit) {
+		RowBounds rowBounds = new RowBounds(offset, limit);
+		return sqlSessionTemplate.selectList(getMapperId("searchTitle"), keyword, rowBounds);
+	}
 	
+	///////////////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////
+
 	/******* upload *******/
 	@Override
 	public int upload(ArticleUpload upload) {

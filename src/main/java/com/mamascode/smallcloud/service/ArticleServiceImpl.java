@@ -221,8 +221,14 @@ public class ArticleServiceImpl implements ArticleService {
 		return listHelper;
 	}
 	
-	///////////////////////////////////////////////////////////////////////////////
+	/******* getSearchTitle *******/
+	@Override
+	public List<String> getSearchTitle(String keyword, int keywordPerPage) {
+		return articleDao.getSearchTitle(keyword, 0, keywordPerPage);
+	}
 	
+	///////////////////////////////////////////////////////////////////////////////
+
 	/******* getChildArticles *******/
 	@Override
 	public List<Article> getChildArticles(int articleId) {

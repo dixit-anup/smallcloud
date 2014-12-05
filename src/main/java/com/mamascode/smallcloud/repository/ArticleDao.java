@@ -37,6 +37,7 @@ public interface ArticleDao {
 	List<Article> getChildArticles(int parentArticleId, boolean reverse);
 	List<Article> getChildArticles(int parentArticleId, int offset, int limit, boolean reverse);
 	
+	List<String> getSearchTitle(String keyword, int offset, int limit);
 	///////////////////////////////////////////////////////////////////////////////
 	
 	int upload(ArticleUpload upload);
