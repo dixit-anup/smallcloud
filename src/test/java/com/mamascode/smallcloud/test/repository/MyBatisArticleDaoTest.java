@@ -15,7 +15,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.mamascode.smallcloud.model.Article;
-import com.mamascode.smallcloud.model.ArticleUpload;
 import com.mamascode.smallcloud.repository.ArticleDao;
 import com.mamascode.smallcloud.repository.test.DaoTestSetup;
 
@@ -212,6 +211,7 @@ public class MyBatisArticleDaoTest {
 			
 		}
 		
+		/*
 		int articleId = articleDao.getMaxArticleId();
 		ArticleUpload upload = new ArticleUpload();
 		upload.setArticleId(articleId);
@@ -229,6 +229,7 @@ public class MyBatisArticleDaoTest {
 		
 		assertThat(articleDao.deleteUploadByArticleId(articleId), is(1));
 		assertThat(articleDao.getUploadCount(articleId), is(0));
+		*/
 	}
 	
 	private void printArticleList(int testNo, String testTitle, List<Article> articleList) {

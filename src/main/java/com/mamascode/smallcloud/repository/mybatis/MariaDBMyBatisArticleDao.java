@@ -11,7 +11,6 @@ import org.springframework.stereotype.Repository;
 
 import com.mamascode.smallcloud.exception.UpdateResultCountNotMatchException;
 import com.mamascode.smallcloud.model.Article;
-import com.mamascode.smallcloud.model.ArticleUpload;
 import com.mamascode.smallcloud.repository.ArticleDao;
 
 @Repository
@@ -27,7 +26,7 @@ public class MariaDBMyBatisArticleDao extends MyBatisDao implements ArticleDao {
 	
 	///////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////
-	// constructors(default)
+	// constructors
 	
 	@Autowired
 	public MariaDBMyBatisArticleDao(SqlSessionTemplate sqlSessionTemplate) {
@@ -214,51 +213,6 @@ public class MariaDBMyBatisArticleDao extends MyBatisDao implements ArticleDao {
 	public List<String> getSearchTitle(String keyword, int offset, int limit) {
 		RowBounds rowBounds = new RowBounds(offset, limit);
 		return sqlSessionTemplate.selectList(getMapperId("searchTitle"), keyword, rowBounds);
-	}
-	
-	///////////////////////////////////////////////////////////////////////////////
-	///////////////////////////////////////////////////////////////////////////////
-
-	/******* upload *******/
-	@Override
-	public int upload(ArticleUpload upload) {
-		int result = sqlSessionTemplate.insert(getMapperId("insertArticleUpload"), upload);
-		
-		if(result == 1)
-			return result;
-		else
-			throw new UpdateResultCountNotMatchException(
-					"upload() in MariaDBMyBatisArticleDao result does not match");
-	}
-	
-	/******* deleteUpload *******/
-	@Override
-	public int deleteUpload(int uploadId) {
-		int result = sqlSessionTemplate.delete(getMapperId("deleteArticleUpload"), uploadId);
-		
-		if(result == 1 || result == 0)
-			return result;
-		else
-			throw new UpdateResultCountNotMatchException(
-					"deleteUpload() in MariaDBMyBatisArticleDao result does not match");
-	}
-	
-	/******* deleteUploadByArticleId *******/
-	@Override
-	public int deleteUploadByArticleId(int articleId) {
-		return sqlSessionTemplate.delete(getMapperId("deleteArticleUploadByArticleId"), articleId);
-	}
-	
-	/******* getUploadCount *******/
-	@Override
-	public int getUploadCount(int articleId) {
-		return sqlSessionTemplate.selectOne(getMapperId("selectArticleUploadCount"), articleId);
-	}
-	
-	/******* getUploads *******/
-	@Override
-	public List<ArticleUpload> getUploads(int articleId) {
-		return sqlSessionTemplate.selectList(getMapperId("selectArtocleUploadList"), articleId);
 	}
 	
 	///////////////////////////////////////////////////////////////////////////////

@@ -3,7 +3,6 @@ package com.mamascode.smallcloud.repository;
 import java.util.List;
 
 import com.mamascode.smallcloud.model.Article;
-import com.mamascode.smallcloud.model.ArticleUpload;
 
 public interface ArticleDao {
 	///////////////////////////////////////////////////////////////////////////////
@@ -38,15 +37,7 @@ public interface ArticleDao {
 	List<Article> getChildArticles(int parentArticleId, int offset, int limit, boolean reverse);
 	
 	List<String> getSearchTitle(String keyword, int offset, int limit);
-	///////////////////////////////////////////////////////////////////////////////
-	
-	int upload(ArticleUpload upload);
-	int deleteUpload(int uploadId);
-	int deleteUploadByArticleId(int articleId);
-	
-	int getUploadCount(int articleId);
-	List<ArticleUpload> getUploads(int articleId);
-	
+		
 	///////////////////////////////////////////////////////////////////////////////
 	
 	int getMaxArticleId();
