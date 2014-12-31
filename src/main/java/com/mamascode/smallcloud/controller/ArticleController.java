@@ -121,7 +121,8 @@ public class ArticleController {
 	/***** writeArticle *****/
 	@RequestMapping(value="/write", method=RequestMethod.POST)
 	public String writeArticle(@ModelAttribute @Valid Article article, HttpSession session,
-			BindingResult bindingResult, SessionStatus sessionStatus, Model model) {
+			BindingResult bindingResult, SessionStatus sessionStatus,
+			@RequestParam(value="uploadFiles", required=false) List<String> uploadFiles, Model model) {
 		int articleId = 0;
 		
 		// parameter filtering
