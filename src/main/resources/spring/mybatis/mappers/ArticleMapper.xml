@@ -127,30 +127,7 @@
 		WHERE article_title LIKE CONCAT(#{keyword}, '%')
 		ORDER BY article_title
 	</select>
-	
-	<!-- ********************************************************************************* -->
-	<!-- ********************************************************************************* -->
-	
-	<insert id="insertArticleUpload" parameterType="ArticleUpload">
-		INSERT INTO article_upload (article_id, file_name) VALUES (#{articleId}, #{fileName}) 
-	</insert>
-	
-	<delete id="deleteArticleUpload" parameterType="Integer">
-		DELETE FROM article_upload WHERE uploadId = #{uploadId}
-	</delete>
-	
-	<delete id="deleteArticleUploadByArticleId" parameterType="Integer">
-		DELETE FROM article_upload WHERE article_id = #{articleId}
-	</delete>
-	
-	<select id="selectArticleUploadCount" parameterType="Integer" resultType="Integer">
-		SELECT COUNT(*) FROM article_upload WHERE article_id = #{articleId}
-	</select>
-	
-	<select id="selectArtocleUploadList" parameterType="Integer" resultMap="articleUploadMap">
-		SELECT upload_id, article_id, file_name FROM article_upload WHERE article_id = #{articleId}
-	</select>
-	
+		
 	<!-- ********************************************************************************* -->
 	<!-- ********************************************************************************* -->
 	
@@ -166,11 +143,5 @@
 		<result column="level" jdbcType="TINYINT" property="level" />
 		<result column="write_ip" jdbcType="VARCHAR" property="writeIp" />
 		<result column="mask" jdbcType="BOOLEAN" property="mask" />
-	</resultMap>
-	
-	<resultMap id="articleUploadMap" type="ArticleUpload">
-		<id column="upload_id" jdbcType="INTEGER" property="uploadId" />
-		<result column="article_id" jdbcType="INTEGER" property="articleId" />
-		<result column="file_name" jdbcType="VARCHAR" property="fileName" />
 	</resultMap>
 </mapper>

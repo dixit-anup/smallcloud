@@ -4,11 +4,13 @@ import java.util.List;
 
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 import com.mamascode.smallcloud.exception.UpdateResultCountNotMatchException;
 import com.mamascode.smallcloud.model.ArticleUpload;
 import com.mamascode.smallcloud.repository.FileUploadDao;
 
+@Repository
 public class MariaDBMyBatisFileUploadDao extends MyBatisDao implements FileUploadDao {
 	///////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////
@@ -37,10 +39,12 @@ public class MariaDBMyBatisFileUploadDao extends MyBatisDao implements FileUploa
 	@Override
 	public int upload(ArticleUpload upload) {
 		int result = sqlSessionTemplate.insert(getMapperId("insertArticleUpload"), upload);
+		int lastInsertId = 0;
 		
-		if(result == 1)
-			return result;
-		else
+		if(result == 1) {
+			lastInsertId = sqlSessionTemplate.selectOne(getMapperId("selectLastInsertUploadId"));
+			return lastInsertId;
+		} else
 			throw new UpdateResultCountNotMatchException(
 					"upload() in MariaDBMyBatisFileUploadDao result does not match");
 	}

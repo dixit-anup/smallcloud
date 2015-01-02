@@ -188,7 +188,7 @@ public class ArticleSreviceTest {
 	/////////////////////////////////////////////////////////////////////////////////////////////
 	
 	private void insertInternal() throws InterruptedException {
-		assertTrue(articleService.writeArticle(article1) != 0);
+		/*assertTrue(articleService.writeArticle(article1) != 0);
 		int maxId = articleDao.getMaxArticleId();
 		
 		Thread.sleep(500);
@@ -238,7 +238,7 @@ public class ArticleSreviceTest {
 		Thread.sleep(500);
 		assertTrue(articleService.writeArticle(article9) != 0);
 		Thread.sleep(500);
-		assertTrue(articleService.writeArticle(article10) != 0);
+		assertTrue(articleService.writeArticle(article10) != 0);*/
 	}
 	
 	/////////////////////////////////////////////////////////////////////////////////////////////

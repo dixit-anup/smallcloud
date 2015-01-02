@@ -1,18 +1,24 @@
 package com.mamascode.smallcloud.service;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.mamascode.smallcloud.model.Article;
 import com.mamascode.smallcloud.model.ArticleUpload;
 import com.mamascode.smallcloud.repository.ArticleDao;
+import com.mamascode.smallcloud.repository.FileUploadDao;
 import com.mamascode.smallcloud.utils.ListHelper;
 
 @Service
@@ -22,9 +28,14 @@ public class ArticleServiceImpl implements ArticleService {
 	// Article DAO
 	
 	private @Autowired ArticleDao articleDao;
+	private @Autowired FileUploadDao fileUploadDao;
 	
 	public void setArticleDao(ArticleDao articleDao) {
 		this.articleDao = articleDao;
+	}
+	
+	public void setFileUploadDao(FileUploadDao fileUploadDao) {
+		this.fileUploadDao = fileUploadDao;
 	}
 	
 	///////////////////////////////////////////////////////////////////////////////
@@ -43,13 +54,85 @@ public class ArticleServiceImpl implements ArticleService {
 
 	/******* writeArticle *******/
 	@Override
-	public int writeArticle(Article article) {
+	public int writeArticle(Article article, List<MultipartFile> uploadFiles, String webRootPath) {
+		int uploadDaoSuccessCount = 0;
+		int fileUploadSuccessCount = 0;
+		List<String> fileNames = new ArrayList<String>();
+		
+		// transaction boundary setting(manual) 
+		// ****** when unexpected exception(ex, sql exception) is thrown,
+		// ****** then DB roll back by @Transactional Declaration (in Article Service)
+		
+		// ****** default setting(PROPAGATION_REQUIRED, ISOLATION_DEFAULT, TIMEOUT_DEFAULT, readOnly=false)
+		TransactionDefinition transactionDefinition = new DefaultTransactionDefinition();
+		TransactionStatus transactionStatus = transactionManager.getTransaction(transactionDefinition);
+		
+		// set a parent id if it exists
 		if(article.getParentId() != 0) {
 			Article parent = articleDao.get(article.getParentId());
 			article.setLevel((short) (parent.getLevel() + 1));
 		}
 		
-		return articleDao.write(article);
+		// write article
+		int articleId = articleDao.write(article);
+		
+		if(articleId == 0) {
+			// something wrong! roll-back
+			transactionManager.rollback(transactionStatus);
+			return articleId;
+		}
+		
+		if(uploadFiles != null && uploadFiles.size() != 0) {
+			for(MultipartFile uploadFile : uploadFiles) {
+				int uploadId = 0;
+				
+				ArticleUpload upload = new ArticleUpload();
+				upload.setArticleId(articleId);
+				upload.setFileName(uploadFile.getOriginalFilename());
+				
+				if((uploadId = fileUploadDao.upload(upload)) != 0)
+					uploadDaoSuccessCount++;
+				
+				try {
+					// upload a file
+					StringBuilder builder = new StringBuilder();
+					builder.append(webRootPath).append("/user_files/").append(articleId)
+					.append(uploadId).append("_").append(upload.getFileName());
+					
+					String filePath = builder.toString();
+					fileNames.add(filePath);
+					
+					File file = new File(filePath);
+					FileUtils.writeByteArrayToFile(file, uploadFile.getBytes());
+					fileUploadSuccessCount++;
+				} catch (IOException e) {
+					// file upload failed: database roll-back
+					transactionManager.rollback(transactionStatus);
+					
+					// and delete files uploaded
+					cleanUploadedFiles(fileUploadSuccessCount, fileNames);
+				}
+			}
+		}
+		
+		if(uploadDaoSuccessCount != uploadFiles.size()) {
+			// db error: roll-back
+			transactionManager.rollback(transactionStatus);
+			cleanUploadedFiles(fileUploadSuccessCount, fileNames);
+			return 0;
+		}
+		
+		// all success! commit
+		transactionManager.commit(transactionStatus);
+		return articleId;
+	}
+	
+	private void cleanUploadedFiles(int fileUploadSuccessCount, List<String> fileNames) {
+		
+		for(int i = 0; i < fileUploadSuccessCount; i++) {
+			File file = new File(fileNames.get(i));
+			file.delete();
+		}
 	}
 	
 	/******* setArticle *******/

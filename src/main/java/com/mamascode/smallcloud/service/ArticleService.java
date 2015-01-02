@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.mamascode.smallcloud.model.Article;
 import com.mamascode.smallcloud.model.ArticleUpload;
@@ -20,7 +21,7 @@ public interface ArticleService {
 	///////////////////////////////////////////////////////////////////////////////
 	
 	@Transactional(propagation=Propagation.REQUIRED, readOnly=false)
-	int writeArticle(Article article);
+	int writeArticle(Article article, List<MultipartFile> uploadFiles, String webRootPath);
 	
 	@Transactional(propagation=Propagation.REQUIRED, readOnly=false)
 	boolean setArticle(Article article);

@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.mamascode.smallcloud.model.Article;
 import com.mamascode.smallcloud.repository.ArticleDao;
@@ -46,6 +47,9 @@ public class ArticleController {
 	
 	@Value("${application.maxArticleLevel}")
 	private int MAX_ARTICLE_LEVEL;
+	
+	@Value("${application.uploadRootPath}")
+	private String WEB_ROOT_PATH;
 	
 	private final static int ARTICLE_PER_PAGE = 15; 
 	
@@ -122,7 +126,7 @@ public class ArticleController {
 	@RequestMapping(value="/write", method=RequestMethod.POST)
 	public String writeArticle(@ModelAttribute @Valid Article article, HttpSession session,
 			BindingResult bindingResult, SessionStatus sessionStatus,
-			@RequestParam(value="uploadFiles", required=false) List<String> uploadFiles, Model model) {
+			@RequestParam(value="uploadFiles", required=false) List<MultipartFile> uploadFiles, Model model) {
 		int articleId = 0;
 		
 		// parameter filtering
@@ -131,7 +135,10 @@ public class ArticleController {
 		article.setWriterName(SecurityUtil.replaceScriptTag(article.getWriterName(), false));
 		article.setHomepage(SecurityUtil.replaceScriptTag(article.getHomepage(), false));
 		
-		if(bindingResult.hasErrors() || (articleId = articleService.writeArticle(article)) == 0) {
+		// TODO: check files
+		
+		if(bindingResult.hasErrors() || 
+				(articleId = articleService.writeArticle(article, uploadFiles, WEB_ROOT_PATH)) == 0) {
 			return "writeArticle";
 		}
 		

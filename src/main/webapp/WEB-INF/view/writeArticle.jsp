@@ -62,7 +62,7 @@
 	<table>
 		<c:url var="postUrl" value="/write" />
 		<c:url var="rootUrl" value="/" />
-		<sf:form action="${postUrl}" method="post" modelAttribute="article">
+		<sf:form action="${postUrl}" method="post" modelAttribute="article" enctype="multipart/form-data">
 		<tr>
 			<td>제목</td>
 			<td colspan="3">

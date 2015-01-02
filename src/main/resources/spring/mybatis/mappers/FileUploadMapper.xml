@@ -27,8 +27,16 @@
 		SELECT upload_id, article_id, file_name FROM article_upload WHERE article_id = #{articleId}
 	</select>
 	
+	<select id="selectLastInsertUploadId" resultType="Integer">
+		SELECT LAST_INSERT_ID()
+	</select>
+	
 	<!-- ********************************************************************************* -->
 	<!-- ********************************************************************************* -->
 	
-	
+	<resultMap id="articleUploadMap" type="ArticleUpload">
+		<id column="upload_id" jdbcType="INTEGER" property="uploadId" />
+		<result column="article_id" jdbcType="INTEGER" property="articleId" />
+		<result column="file_name" jdbcType="VARCHAR" property="fileName" />
+	</resultMap>
 </mapper>
