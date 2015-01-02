@@ -39,6 +39,7 @@ public class Article {
 	
 	private int childCount;
 	private List<Article> children;
+	private List<ArticleUpload> uploadFiles;
 	
 	/////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////	
@@ -145,5 +146,13 @@ public class Article {
 
 	public void setChildren(List<Article> children) {
 		this.children = children;
+	}
+
+	public List<ArticleUpload> getUploadFiles() {
+		return uploadFiles;
+	}
+
+	public void setUploadFiles(List<ArticleUpload> uploadFiles) {
+		this.uploadFiles = uploadFiles;
 	}
 }

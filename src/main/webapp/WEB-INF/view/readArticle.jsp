@@ -81,6 +81,20 @@
 				</td>
 			</tr>
 			
+			<tr>
+				<td class="label">첨부파일</td>
+				<td colspan="3">
+					<c:set var="uploadFiles" value="<%=article.getUploadFiles()%>" />
+					<c:set var="uploadFilesCount" value="<%=article.getUploadFiles().size()%>" />
+					<c:forEach var="uploadFile" items="${uploadFiles}" varStatus="status">
+					<span style="cursor:pointer;" onclick="downloadFile(${uploadFile.uploadId});">
+						[${status.index + 1}] ${uploadFile.fileName}
+					</span>
+					<c:if test="${uploadFilesCount != (status.index + 1)}"><br /></c:if>
+					</c:forEach>
+				</td>
+			</tr>
+			
 			<tr class="content">
 				<td class="label">내용</td>
 				<td colspan="3">

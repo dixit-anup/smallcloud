@@ -244,7 +244,11 @@ public class ArticleServiceImpl implements ArticleService {
 	/******* getArticle *******/
 	@Override
 	public Article getArticle(int articleId) {
-		return articleDao.get(articleId);
+		Article article = articleDao.get(articleId);
+		if(article != null && article.getArticleId() != 0)
+			article.setUploadFiles(fileUploadDao.getUploads(article.getArticleId()));
+		
+		return article;
 	}
 	
 	/******* getArticles *******/
